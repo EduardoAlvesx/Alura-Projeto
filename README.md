@@ -1,4 +1,4 @@
 # Projeto Alura
 
-Consumindo uma API com Java
+Consumindo uma API de filmes com Java
 

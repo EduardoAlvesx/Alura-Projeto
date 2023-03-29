@@ -1,0 +1,71 @@
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.InputStream;
+
+
+
+public class GeradorDeFigurinhas {
+
+    public void cria(InputStream inputStream, String nomeArquivo) throws Exception {
+
+        // leitura de imagem
+        // BufferedImage original = ImageIO.read(new File("Alura-stickers/Saida/Filme.jpg"));
+        // InputStream inputStream = new URL("https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/TopMovies_1.jpg").openStream();
+         BufferedImage original = ImageIO.read(inputStream);
+
+        // criar nova imagem em memoria com transparencia e com tamanho novo
+        int largura = original.getWidth();
+        int altura = original.getHeight();
+        int novaAltura = altura + 200;
+        BufferedImage novaImagem = new BufferedImage(largura, novaAltura, BufferedImage.TRANSLUCENT);
+
+        // copiar a imagem original para a nova imagem em memoria
+        Graphics2D graphics = (Graphics2D) novaImagem.getGraphics();
+        graphics.drawImage(original, 0, 0, null);
+
+        // configurar a fonte
+        var fonte = new Font("Impact", Font.BOLD, 90);
+        graphics.setFont(fonte);
+        graphics.setColor(Color.YELLOW);
+
+
+        // escrever uma frase na nova imagem
+        String texto = "TOPZERA";
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+        Rectangle2D retangulo = fontMetrics.getStringBounds(texto, graphics);
+        int larguraTexto = (int) retangulo.getWidth();
+        int posicaoTextoX = (largura - larguraTexto) / 2;
+        int posicaoTextoY = novaAltura - 100;
+        graphics.drawString(texto, posicaoTextoX, posicaoTextoY);
+
+        FontRenderContext fontRenderContext = graphics.getFontRenderContext();
+        TextLayout textLayout = new TextLayout(texto, fonte, fontRenderContext);
+        Shape outline = textLayout.getOutline(null);
+        AffineTransform transform = graphics.getTransform();
+        transform.translate(posicaoTextoX, posicaoTextoY);
+        graphics.setTransform(transform);
+
+        var basicStroke = new BasicStroke(largura * 0.004f);
+        graphics.setStroke(basicStroke);
+
+        graphics.setColor(Color.BLACK);
+        graphics.draw(outline);
+        graphics.setClip(outline);
+
+        // escrever a nova imagem em um arquivo
+        ImageIO.write(novaImagem, "png", new File(nomeArquivo));
+
+    }
+
+    //public static void main(String[] args) throws Exception {
+        //var gerador = new GeradorDeFigurinhas();
+        //gerador.cria();
+    }
+
+
